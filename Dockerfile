@@ -42,8 +42,9 @@ COPY requirements.txt requirements.txt
 RUN pip install -U pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY api api
+
 COPY ai_spotify_lyrics ai_spotify_lyrics
+COPY api api
 COPY raw_data raw_data
 
 CMD uvicorn api.fast:app --host 0.0.0.0 --port $PORT
