@@ -19,6 +19,9 @@ clean:
 test_structure:
 	@bash tests/test_structure.sh
 
+test_zeroshot:
+	@pytest tests/test_zeroshot_pipe.py
+
 #======================#
 #          API         #
 #======================#
