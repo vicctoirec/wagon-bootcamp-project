@@ -1,7 +1,6 @@
 import pandas as pd
 
 from ai_spotify_lyrics.params import DATA_CSV_17k
-import os
 
 from langchain.chat_models import init_chat_model
 from langchain_core.tools import tool
@@ -12,25 +11,45 @@ from langchain.schema import HumanMessage
 # Create a dataframe
 df = pd.read_csv(DATA_CSV_17k)
 
+# lists uniques artists and songs
+artists = sorted(df["artist"].unique().tolist())
+songs = sorted(df["track_title_clean"].unique().tolist())
+
+# Instantiate Gemini model
+model = init_chat_model("gemini-2.0-flash", model_provider="google_genai")
+
+
+# Get a sorted list of available artists
+def get_artists():
+    """ Get a sorted list of available artists """
+    return artists
+
+
+# Get a sorted list of available songs
+def get_songs():
+    """ Get a sorted list of available songs """
+    return songs
+
+
 # Get lyrics from dataframe
 @tool
 def get_lyrics(artist_name : str) -> str:
     """ Get song titles and lyrics of a specific artist's name.
     Use the artist name in the query as artist_name """
+
     songs = df[df['artist'].isin([artist_name])]
+
     if songs.empty:
-        return f"No songs found for this {artist}."
+        f"No songs found for this {artist_name}."
 
     results = []
     for _, row in songs.iterrows():
         results.append(f"Title: {row['track_title_clean']}\nLyrics: {row['lyrics_clean']}\n")
     return "\n".join(results)
 
+
 # Prompt Gemini model
 def model_gemini(artist):
-
-    ### Instantiate Gemini model ###
-    model = init_chat_model("gemini-2.0-flash", model_provider="google_genai")
 
     ### Instantiate variables ###
     # Tools
@@ -87,4 +106,4 @@ def model_gemini(artist):
     # Get response
     response = agent.invoke({"messages": [HumanMessage(content=query)]})
 
-    return print(response["messages"][-1].content)
+    return response["messages"][-1].content

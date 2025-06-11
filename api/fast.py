@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from ai_spotify_lyrics.model import initialize_dummy_model
+from ai_spotify_lyrics.model_gemini import get_artists, get_songs, model_gemini
 
 app = FastAPI()
 app.state.model = initialize_dummy_model()
@@ -24,6 +25,23 @@ def root():
         'message': "Hi, The API AI SPOTIFY LYRICS is running!"
     }
 
+
+@app.get("/artists")
+def artists():
+    """ Get a list of available artists """
+    results = get_artists()
+    return {
+        'results': results
+    }
+
+@app.get("/songs")
+def songs():
+    """ Get a list of available songs """
+    results = get_songs()
+    return {
+        'results': results
+    }
+
 # Endpoint for https://your-domain.com/predict?
 @app.get("/predict")
 def get_predict(input: str):
@@ -41,8 +59,10 @@ def get_predict(input: str):
 @app.get("/predict-artist-themes")
 def get_predict_themes(input: str):
     # input is an artist name
-    # For a dummy version, returns fixes themes
-    prediction = ['journey', 'nature', 'universe', 'stars', 'god']
+    # For a dummy version, returns fixed themes
+    # For gemini model returns str
+    prediction = model_gemini(input)
+    # prediction = ['journey', 'nature', 'universe', 'stars', 'god']
     return {
         'prediction': prediction,
         'inputs': {

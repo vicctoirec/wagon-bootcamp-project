@@ -1,18 +1,18 @@
-# packaging
+# Packaging
 pip
 setuptools
 twine
 wheel
 
-# python and debugging
+# Python and debugging
 ipdb
 ipykernel
 
-# data viz
+# Data viz
 matplotlib
 seaborn
 
-# jupyter
+# Jupyter
 jupyter-contrib-core==0.4.0
 jupyter-contrib-nbextensions==0.5.1
 jupyter-highlight-selected-word==0.2.0
