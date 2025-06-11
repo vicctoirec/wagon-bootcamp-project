@@ -36,3 +36,40 @@ def get_predict(input: str):
             'input': input,
         }
     }
+
+
+@app.get("/predict-artist-themes")
+def get_predict_themes(input: str):
+    # input is an artist name
+    # For a dummy version, returns fixes themes
+    prediction = ['journey', 'nature', 'universe', 'stars', 'god']
+    return {
+        'prediction': prediction,
+        'inputs': {
+            'input': input,
+        }
+    }
+
+@app.get("/predict-mood-songs")
+def get_predict_mood_songs(input: str):
+    # input is a prompt
+    # For a dummy version, returns fixes themes
+    prediction = app.state.model.predict(input)
+    return {
+        'prediction': prediction,
+        'inputs': {
+            'input': input,
+        }
+    }
+
+@app.get("/predict-similar-songs")
+def get_predict_similar_songs(input: str):
+    # input is a song
+    # For a dummy version, returns fixes themes
+    prediction = app.state.model.predict(input)
+    return {
+        'prediction': prediction,
+        'inputs': {
+            'input': input,
+        }
+    }

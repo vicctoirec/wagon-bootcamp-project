@@ -7,6 +7,17 @@ huggingface-hub
 einops
 torch
 
+# langchain
+langchain==0.0.247
+langchain-google-genai==0.3.7
+langgraph==0.4.3
+langsmith==0.3.42
+chromadb==0.3.28
+
+# Google Gemini
+google-genai
+
+
 # Uncomment if you use sklearn
 # scikit-learn==1.6.1
 
