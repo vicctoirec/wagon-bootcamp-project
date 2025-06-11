@@ -36,6 +36,7 @@ def get_zeroshot_score(lyrics, user_input):
 def compute_scores(df, user_input, threshold=0.8, top_n=10):
     """
     Compute zero-shot scores for lyrics against user input.
+
     Args:
         df (DataFrame): DataFrame containing lyrics and metadata.
         user_input (str): User input to compare against lyrics.
