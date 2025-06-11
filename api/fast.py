@@ -1,10 +1,14 @@
 # TODO: Import your package, replace this by explicit imports of what you need
-from packagename.main import predict
+# from ai_spotify_lyrics.main import predict
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from ai_spotify_lyrics.model import initialize_dummy_model
+from ai_spotify_lyrics.model_gemini import get_artists, get_songs, model_gemini
+
 app = FastAPI()
+app.state.model = initialize_dummy_model()
 
 app.add_middleware(
     CORSMiddleware,
@@ -18,21 +22,74 @@ app.add_middleware(
 @app.get("/")
 def root():
     return {
-        'message': "Hi, The API is running!"
+        'message': "Hi, The API AI SPOTIFY LYRICS is running!"
     }
 
-# Endpoint for https://your-domain.com/predict?input_one=154&input_two=199
+
+@app.get("/artists")
+def artists():
+    """ Get a list of available artists """
+    results = get_artists()
+    return {
+        'results': results
+    }
+
+@app.get("/songs")
+def songs():
+    """ Get a list of available songs """
+    results = get_songs()
+    return {
+        'results': results
+    }
+
+# Endpoint for https://your-domain.com/predict?
 @app.get("/predict")
-def get_predict(input_one: float,
-            input_two: float):
-    # TODO: Do something with your input
-    # i.e. feed it to your model.predict, and return the output
-    # For a dummy version, just return the sum of the two inputs and the original inputs
-    prediction = float(input_one) + float(input_two)
+def get_predict(input: str):
+    # input is a text prompt
+    # For a dummy version, returns random songs
+    prediction = app.state.model.predict(input)
     return {
         'prediction': prediction,
         'inputs': {
-            'input_one': input_one,
-            'input_two': input_two
+            'input': input,
+        }
+    }
+
+
+@app.get("/predict-artist-themes")
+def get_predict_themes(input: str):
+    # input is an artist name
+    # For a dummy version, returns fixed themes
+    # For gemini model returns str
+    prediction = model_gemini(input)
+    # prediction = ['journey', 'nature', 'universe', 'stars', 'god']
+    return {
+        'prediction': prediction,
+        'inputs': {
+            'input': input,
+        }
+    }
+
+@app.get("/predict-mood-songs")
+def get_predict_mood_songs(input: str):
+    # input is a prompt
+    # For a dummy version, returns fixes themes
+    prediction = app.state.model.predict(input)
+    return {
+        'prediction': prediction,
+        'inputs': {
+            'input': input,
+        }
+    }
+
+@app.get("/predict-similar-songs")
+def get_predict_similar_songs(input: str):
+    # input is a song
+    # For a dummy version, returns fixes themes
+    prediction = app.state.model.predict(input)
+    return {
+        'prediction': prediction,
+        'inputs': {
+            'input': input,
         }
     }

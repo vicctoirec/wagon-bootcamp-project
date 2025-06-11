@@ -9,13 +9,33 @@ huggingface-hub==0.23.0
 einops==0.6.1
 torch==2.7.1
 
+# langchain
+# langchain==0.0.247
+# langchain-google-genai==0.3.7
+# langgraph==0.4.3
+# langsmith==0.3.42
+# chromadb==0.3.28
+langchain==0.3.25
+langchain-chroma==0.2.3
+langchain-community==0.3.23
+langchain-core==0.3.59
+langchain-google-genai==2.1.4
+langchain-text-splitters==0.3.8
+langgraph==0.4.3
+langsmith==0.3.42
+
+
+# Google Gemini
+#google-genai
+google-genai==1.14.0
+
 # Uncomment if you use sklearn
 # scikit-learn==1.6.1
 
 # Install the correct TensorFlow version
 # Uncomment if you use TensorFlow
-# tensorflow==2.16.2    # For both Intel and Apple silicon
-# keras==3.8.0
+tensorflow==2.16.2    # For both Intel and Apple silicon
+keras==3.8.0
 
 # Google Cloud
 # Uncomment if you use Google Cloud Storage
@@ -25,5 +45,10 @@ torch==2.7.1
 fastapi
 uvicorn
 
+
 # Tests
-pytest==7.4.2
+pytest
+
+# misc
+colorama
+
