@@ -41,7 +41,7 @@ def model_gemini(artist):
         With the name of an artist as an input, and the lyrics of their songs from the get_lyrics tool,
         you are tasked to summarize the top 5 themes in their lyrics.
 
-        Below is an example of the format to use for the response:
+        Below is an example of the format to use for the response, please keep the same format:
 
             Here are the 5 main themes in Adele's songs:
 
