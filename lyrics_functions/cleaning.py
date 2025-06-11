@@ -1,7 +1,7 @@
 import re
 
 def clean_title(title):
-    return title.split(" - Live")[0].strip()
+    return title.split(" - ")[0].strip()
 
 def clean_text(text):
     if not isinstance(text, str):
