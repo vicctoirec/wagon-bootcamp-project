@@ -142,7 +142,7 @@ def model_gemini(song_title, artist_name):
     agent = create_react_agent(model, tools, prompt=system_prompt)
 
     # Input query
-    query = f"Find the top 5 similar songs to {artist_name}'s {song_title}. Summarize why the lyrics are similar"
+    query = f"Find the top 3 similar songs to {artist_name}'s {song_title}. Summarize why the lyrics are similar"
 
     # Get response
     response = agent.invoke({"messages": [HumanMessage(content=query)]})
