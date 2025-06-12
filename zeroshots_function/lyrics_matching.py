@@ -16,7 +16,7 @@ from zeroshots_function.zeroshot_pipeline import preprocess_lyrics, get_zeroshot
 
 # ----------------------- PARAMÈTRES --------------------------------
 EMBD_CSV  = Path("../raw_data/embedded_17klyrics.csv")
-RAW_CSV = Path('../raw_data/20250609_17k_lyrics_eng_fr.csv')
+RAW_CSV = Path('../raw_data/data_17k_lyrics.csv')
 MODEL_NAME = "nomic-ai/nomic-embed-text-v2-moe"  # SBERT model
 BATCH_SIZE = 32  # Batch size for encoding
 TOP_K = 50  # Number of top matches to return
