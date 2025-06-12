@@ -1,58 +1,18 @@
 import pandas as pd
-
-from ai_spotify_lyrics.params import DATA_CSV_9k
-
-from sklearn.compose import make_column_transformer
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.neighbors import NearestNeighbors
-
 import torch
-import pandas as pd
 import torch.nn.functional as F
-import ast
-
+import joblib
 from langchain_core.tools import tool
 from langchain.chat_models import init_chat_model
 from langgraph.prebuilt import create_react_agent
 from langchain.schema import HumanMessage
 
-df = pd.read_csv(DATA_CSV_9k)
-df['embedding'] = df['embedding'].apply(ast.literal_eval)
+from ai_spotify_lyrics.params import DATA_CSV_9k
 
-def pipeline():
-    # Categorize columns
-    categ_columns = ['genre']
-    num_columns = ['popularity', 'year', 'danceability', 'energy',
-        'key', 'loudness', 'mode', 'speechiness', 'acousticness',
-        'instrumentalness', 'liveness', 'valence', 'tempo', 'duration_ms',
-        'time_signature']
-
-    # Call encoders and scalers
-    ohe = OneHotEncoder(sparse_output=False)
-    minmax = MinMaxScaler()
-
-    # Make encoding pipeline
-    pipe = make_column_transformer(
-        (ohe, categ_columns),
-        (minmax, num_columns),
-        remainder='drop'
-    ).set_output(transform="pandas")
-
-    return pipe
-
-def preprocess(df):
-    pipe = pipeline()
-    X_transformed = pipe.fit_transform(df)
-    return X_transformed, pipe
-
-def knn_model(df):
-    X_transformed, pipe = preprocess(df)
-    model_knn = NearestNeighbors(n_neighbors=100, algorithm='auto', metric='euclidean')
-    model_knn.fit(X_transformed)
-    return model_knn, pipe
-
-model_knn, pipe = knn_model(df)
+# Chargement des objets sauvegardés
+df = pd.read_pickle("/Users/margauxlacroix/code/vicctoirec/wagon-bootcamp-project/raw_data/processed_df.pkl")
+pipe = joblib.load("/Users/margauxlacroix/code/vicctoirec/wagon-bootcamp-project/ai_spotify_lyrics/prepare/pipe.joblib")
+model_knn = joblib.load("/Users/margauxlacroix/code/vicctoirec/wagon-bootcamp-project/ai_spotify_lyrics/prepare/knn_model.joblib")
 
 def find_song(song_name, artist_name, df, model_knn, pipe):
     song_idx = df.index[(df['title_cleaned'] == song_name) & (df['artist'] == artist_name)].tolist()[0]
