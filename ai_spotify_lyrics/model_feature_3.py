@@ -109,7 +109,7 @@ def get_lyrics_top_songs(song_title : str, artist_name : str) -> str:
     """ Input a song and artist and get the top 5 songs similar in beat and lyrics.
     Use the artist name and song title in the query as artist_name and song_title """
 
-    top_songs = get_top_similar_songs(df, song_title, artist_name, top_n=5)[['artist', 'title_cleaned', 'text']]
+    top_songs = get_top_similar_songs(df, song_title, artist_name, top_n=3)[['artist', 'title_cleaned', 'text']]
     searched_song = df[(df['title_cleaned'] == song_title) & (df['artist'] == artist_name)][['artist', 'title_cleaned', 'text']]
 
     songs = pd.concat([searched_song, top_songs], axis=0)
@@ -134,8 +134,8 @@ def model_gemini(song_title, artist_name):
 
     # Prompt
     system_prompt = """
-        With the name of an artist and a song title as an input use the tool to find the 5 most similar songs based on beats and lyrics.
-        Then, analyze the lyrics of all songs and explain the similarities between the lyrics in 5-10 lines.
+        With the name of an artist and a song title as an input use the tool to find the 3 most similar songs based on beats and lyrics.
+        Then, analyze the lyrics of all songs and explain why the lyrics are similar, in 5-10 lines max. Be specific.
         Make sure that every time you mention a song, you also mention the artist. """
 
     ### Create agent
