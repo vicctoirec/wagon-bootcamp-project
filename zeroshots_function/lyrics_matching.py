@@ -127,7 +127,7 @@ def get_top_k(user_input: str, k=TOP_K):
 
 def refine_top_k(user_input: str,
                  threshold : float =0.8,
-                 k_recall : int =100,
+                 k_recall : int =40,
                  k_final : int =10,
                  verbose : bool = True) -> pd.DataFrame:
     """
@@ -159,7 +159,7 @@ def refine_top_k(user_input: str,
 
     # 2 ─ ZS score -------------------------------------------------------------
     if verbose:
-        print("⏳ Recherche des meilleurs 50 matching titles..")
+        print("⏳ Recherche des meilleurs matching titles..")
     tqdm_bar = tqdm(total=len(data), desc="Chargement de la playlist...", unit="song")
     zs_scores = []
     for txt in data["lyrics_clean"]:
