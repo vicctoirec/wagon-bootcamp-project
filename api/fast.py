@@ -7,6 +7,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from ai_spotify_lyrics.model import initialize_dummy_model
 from ai_spotify_lyrics.model_gemini import get_artists, get_songs, model_gemini
 
+from zeroshots_function.lyrics_matching import get_top_k
+
 app = FastAPI()
 app.state.model = initialize_dummy_model()
 
@@ -74,9 +76,9 @@ def get_predict_themes(input: str):
 def get_predict_mood_songs(input: str):
     # input is a prompt
     # For a dummy version, returns fixes themes
-    prediction = app.state.model.predict(input)
+    prediction = get_top_k(input, 5)
     return {
-        'prediction': prediction,
+        'prediction': prediction.to_dict(),
         'inputs': {
             'input': input,
         }

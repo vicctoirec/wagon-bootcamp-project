@@ -2,7 +2,7 @@ import re
 from transformers import pipeline
 import textwrap
 
-classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli", device=0)
+classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
 
 def preprocess_lyrics(lyrics):
     """Preprocess lyrics by cleaning and normalizing the text."""
