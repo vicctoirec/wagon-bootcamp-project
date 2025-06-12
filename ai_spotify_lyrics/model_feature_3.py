@@ -7,12 +7,12 @@ from langchain.chat_models import init_chat_model
 from langgraph.prebuilt import create_react_agent
 from langchain.schema import HumanMessage
 
-from ai_spotify_lyrics.params import DATA_CSV_9k
+from ai_spotify_lyrics.params import DATA_9K, PIPELINE, KNN_MODEL
 
 # Chargement des objets sauvegardés
-df = pd.read_pickle("/Users/margauxlacroix/code/vicctoirec/wagon-bootcamp-project/raw_data/processed_df.pkl")
-pipe = joblib.load("/Users/margauxlacroix/code/vicctoirec/wagon-bootcamp-project/ai_spotify_lyrics/prepare/pipe.joblib")
-model_knn = joblib.load("/Users/margauxlacroix/code/vicctoirec/wagon-bootcamp-project/ai_spotify_lyrics/prepare/knn_model.joblib")
+df = pd.read_pickle(DATA_9K)
+pipe = joblib.load(PIPELINE)
+model_knn = joblib.load(KNN_MODEL)
 
 def find_song(song_name, artist_name, df, model_knn, pipe):
     song_idx = df.index[(df['title_cleaned'] == song_name) & (df['artist'] == artist_name)].tolist()[0]
