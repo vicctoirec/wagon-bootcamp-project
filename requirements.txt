@@ -8,7 +8,6 @@ sentence-transformers==3.3.0
 huggingface-hub==0.23.0
 einops==0.6.1
 torch==2.1.2
-cu118  # For CUDA 11.8
 
 # langchain
 # langchain==0.0.247
