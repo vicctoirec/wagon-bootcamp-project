@@ -24,13 +24,12 @@ langchain-text-splitters==0.3.8
 langgraph==0.4.3
 langsmith==0.3.42
 
-
 # Google Gemini
 #google-genai
 google-genai==1.14.0
 
 # Uncomment if you use sklearn
-# scikit-learn==1.6.1
+scikit-learn==1.6.1
 
 # Install the correct TensorFlow version
 # Uncomment if you use TensorFlow
