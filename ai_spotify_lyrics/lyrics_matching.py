@@ -6,6 +6,7 @@
 # Calcule la similarité cosinus entre les requêtes et les embeddings et renvoie les 50 meilleurs titres
 # ------------------------------------------------------------------
 
+import os
 from pathlib import Path
 import pandas as pd, time
 import numpy as np
@@ -24,8 +25,16 @@ MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"  # SBERT model
 BATCH_SIZE = 32  # Batch size for encoding
 TOP_K = 50  # Number of top matches to return
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-model = SentenceTransformer(MODEL_NAME, device=DEVICE)
+MODEL_PATH = os.path.join(LOCAL_REGISTRY_PATH, 'all-MiniLM-L6-v2')
 # -------------------------------------------------------------------
+
+if Path(MODEL_PATH).exists():
+    print("Loading model from local")
+    model = SentenceTransformer(MODEL_PATH, device=DEVICE)
+else:
+    print("Loading model from remote / cache")
+    model = SentenceTransformer(MODEL_NAME, device=DEVICE)
+    model.save(MODEL_PATH)
 
 
 def build_embeddings(df: pd.DataFrame) -> pd.DataFrame:
@@ -43,7 +52,7 @@ def build_embeddings(df: pd.DataFrame) -> pd.DataFrame:
 
     # Encode the lyrics
     print("🔹 Encoding lyrics…")
-    embs = model_sbert.encode(
+    embs = model.encode(
         df["lyrics_clean"].tolist(),
         batch_size=BATCH_SIZE,
         show_progress_bar=True)

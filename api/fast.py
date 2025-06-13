@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from ai_spotify_lyrics.model import initialize_dummy_model
 from ai_spotify_lyrics.model_gemini import get_artists, get_songs, model_gemini
 
+from ai_spotify_lyrics.lyrics_matching import get_top_k
 from ai_spotify_lyrics.model_feature_3 import get_top_similar_songs, model_gemini_lyrics_explained
 from ai_spotify_lyrics.feature2_prompt import prompt_gemini
 

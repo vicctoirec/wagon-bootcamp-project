@@ -37,14 +37,15 @@ FROM python:3.10.6-slim
 
 WORKDIR /app
 
-COPY requirements.txt requirements.txt
-
+COPY requirements_prod.txt requirements_prod.txt
+RUN pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+RUN pip install --no-cache-dir -r requirements_prod.txt
+RUN pip install --no-cache-dir --no-deps sentence-transformers==4.1.0
 RUN pip install -U pip
-RUN pip install --no-cache-dir -r requirements.txt
 
-
-COPY ai_spotify_lyrics ai_spotify_lyrics
-COPY api api
+COPY models models
 COPY raw_data raw_data
+COPY api api
+COPY ai_spotify_lyrics ai_spotify_lyrics
 
 CMD uvicorn api.fast:app --host 0.0.0.0 --port $PORT
