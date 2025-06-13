@@ -33,7 +33,7 @@ def find_song(song_name, artist_name, df, model_knn, pipe):
 
     return neighbors_df
 
-def get_top_similar_songs(df, song, artist, top_n=3):
+def get_top_similar_songs(song, artist):
 
     neighbors_df = find_song(song, artist, df, model_knn, pipe)
 
@@ -59,31 +59,37 @@ def get_top_similar_songs(df, song, artist, top_n=3):
 
     label_songs['similarity'] = label_songs.apply(compute_similarity, axis=1)
 
-    # top n songs similaires
-    top_songs = label_songs.sort_values(by='similarity', ascending=False).head(top_n)
+    # top 3 songs similaires
+    top_songs = label_songs.sort_values(by='similarity', ascending=False).head(3)
 
-    return top_songs
+    return [
+        f"{row['title_cleaned']} by {row['artist']}"
+        for _, row in top_songs.iterrows()
+    ]
 
 # Get lyrics from dataframe
 def get_lyrics_top_songs(song_title : str, artist_name : str) -> str:
     """ Input a song and artist and get the top 5 songs similar in beat and lyrics.
     Use the artist name and song title in the query as artist_name and song_title """
 
-    top_songs = get_top_similar_songs(df, song_title, artist_name, top_n=3)[['artist', 'title_cleaned', 'text']]
-    searched_song = df[(df['title_cleaned'] == song_title) & (df['artist'] == artist_name)][['artist', 'title_cleaned', 'text']]
+    similar = get_top_similar_songs(song_title, artist_name)
+    all_songs = [f"{song_title} by {artist_name}"] + similar
 
-    songs = pd.concat([searched_song, top_songs], axis=0)
-
-    if songs.empty:
-        return f"No songs found for this {artist_name} and {song_title}."
-
+    # Récupérer les paroles
     results = []
-    for _, row in songs.iterrows():
-        results.append(f"Artist: {row['artist']}\nTitle: {row['title_cleaned']}\nLyrics: {row['text']}\n")
+    for full_title in all_songs:
+        try:
+            title, artist = full_title.split(" by ")
+            row = df[(df['title_cleaned'] == title) & (df['artist'] == artist)].iloc[0]
+            lyrics = row['text']
+            results.append(f"Artist: {artist}\nTitle: {title}\nLyrics: {lyrics}\n")
+        except IndexError:
+            results.append(f"Paroles non trouvées pour: {full_title}")
+
     return "\n".join(results)
 
 # Prompt Gemini model
-def model_gemini(song_title, artist_name):
+def model_gemini_lyrics_explained(song_title, artist_name):
 
     ### Instantiate Gemini model ###
     model = init_chat_model("gemini-2.0-flash", model_provider="google_genai")
@@ -94,9 +100,9 @@ def model_gemini(song_title, artist_name):
 
     # Prompt
     system_prompt = """
-        With the name of an artist and a song title as an input use the tool to find the 3 most similar songs based on beats and lyrics.
-        Then, analyze the lyrics of all songs and explain why the lyrics are similar, in 5-10 lines max. Be specific.
-        Make sure that every time you mention a song, you also mention the artist. """
+        With the name of an artist and a song title as an input use the tool to find the most similar songs based on beats and lyrics.
+        Then, analyze the lyrics of all songs and explain why the lyrics are similar, in 5-10 lines max. Be specific, you can quote songs if necessary.
+        Make sure that every time you mention a song, you also mention the artist."""
 
     ### Create agent
     agent = create_react_agent(model, tools, prompt=system_prompt)
