@@ -5,6 +5,9 @@
 install_requirements:
 	@pip install -r requirements.txt
 
+install_requirements_prod:
+	@pip install -r requirements_prod.txt
+
 install:
 	@pip install . -U
 
@@ -13,8 +16,8 @@ clean:
 	@rm -f .coverage
 	@rm -fr */__pycache__ */*.pyc __pycache__
 	@rm -fr build dist
-	@rm -fr proj-*.dist-info
-	@rm -fr proj.egg-info
+	@rm -fr ai_spotify_lyrics-*.dist-info
+	@rm -fr ai_spotify_lyrics.egg-info
 
 test_structure:
 	@bash tests/test_structure.sh
@@ -119,5 +122,6 @@ docker_deploy:
 	gcloud run deploy \
 		--image $(DOCKER_IMAGE_PATH):prod \
 		--memory $(GAR_MEMORY) \
+		--cpu $(GAR_CPU) \
 		--region $(GCP_REGION) \
 		--env-vars-file .env.yaml

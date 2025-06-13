@@ -6,25 +6,34 @@
 # Calcule la similarité cosinus entre les requêtes et les embeddings et renvoie les 50 meilleurs titres
 # ------------------------------------------------------------------
 
+import os
 from pathlib import Path
 import pandas as pd
 import numpy as np
 import torch
 # import argparse
 from sentence_transformers import SentenceTransformer, util
-from zeroshots_function.zeroshot_pipeline import preprocess_lyrics
+from ai_spotify_lyrics.zeroshot_pipeline import preprocess_lyrics
 from ai_spotify_lyrics.params import *
 
 # ----------------------- PARAMÈTRES --------------------------------
 EMBD_CSV = Path(DATA_CSV_17k_EMBED)
 RAW_CSV = Path(DATA_CSV_17k) # mêmes index !
-MODEL_NAME = "nomic-ai/nomic-embed-text-v2-moe"  # SBERT model
+MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"  # SBERT model
 BATCH_SIZE = 32  # Batch size for encoding
 TOP_K = 50  # Number of top matches to return
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+MODEL_PATH = os.path.join(LOCAL_REGISTRY_PATH, 'all-MiniLM-L6-v2')
 # -------------------------------------------------------------------
 
-model = SentenceTransformer(MODEL_NAME, device=DEVICE, trust_remote_code=True)
+if Path(MODEL_PATH).exists():
+    print("Loading model from local")
+    model = SentenceTransformer(MODEL_PATH, device=DEVICE)
+else:
+    print("Loading model from remote / cache")
+    model = SentenceTransformer(MODEL_NAME, device=DEVICE)
+    model.save(MODEL_PATH)
+
 
 def build_embeddings(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -37,11 +46,11 @@ def build_embeddings(df: pd.DataFrame) -> pd.DataFrame:
         pd.DataFrame: New DataFrame with embeddings.
     """
     # Initialize the SBERT model
-    model_sbert = SentenceTransformer(MODEL_NAME, device=DEVICE)
+    # model_sbert = SentenceTransformer(MODEL_NAME, device=DEVICE)
 
     # Encode the lyrics
     print("🔹 Encoding lyrics…")
-    embs = model_sbert.encode(
+    embs = model.encode(
         df["lyrics_clean"].tolist(),
         batch_size=BATCH_SIZE,
         show_progress_bar=True)

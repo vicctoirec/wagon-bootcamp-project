@@ -2,7 +2,7 @@ import re
 from transformers import pipeline
 import textwrap
 
-classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
+
 
 def preprocess_lyrics(lyrics):
     """Preprocess lyrics by cleaning and normalizing the text."""
@@ -21,7 +21,7 @@ def chunk_text(text, max_words=250):
 
 def get_zeroshot_score(lyrics, user_input):
     """Compute zero-shot classification score for lyrics against a user label."""
-
+    classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
     chunks = chunk_text(lyrics)
     scores = []
     for chunk in chunks:

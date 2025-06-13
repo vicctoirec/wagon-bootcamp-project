@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from ai_spotify_lyrics.model import initialize_dummy_model
 from ai_spotify_lyrics.model_gemini import get_artists, get_songs, model_gemini
 
-from zeroshots_function.lyrics_matching import get_top_k
+from ai_spotify_lyrics.lyrics_matching import get_top_k
 
 app = FastAPI()
 app.state.model = initialize_dummy_model()
