@@ -7,6 +7,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from ai_spotify_lyrics.model import initialize_dummy_model
 from ai_spotify_lyrics.model_gemini import get_artists, get_songs, model_gemini
 
+from ai_spotify_lyrics.model_feature_3 import get_top_similar_songs, model_gemini_lyrics_explained
+
 from zeroshots_function.lyrics_matching import get_top_k
 
 app = FastAPI()
@@ -85,13 +87,41 @@ def get_predict_mood_songs(input: str):
     }
 
 @app.get("/predict-similar-songs")
-def get_predict_similar_songs(input: str):
-    # input is a song
-    # For a dummy version, returns fixes themes
-    prediction = app.state.model.predict(input)
+def get_predict_similar_songs(input_song: str, input_artist: str):
+    """
+    Endpoint qui retourne les chansons similaires au format "title by artist".
+    """
+    try:
+        prediction = get_top_similar_songs(input_song, input_artist)
+    except ValueError:
+        return {
+            'error': f"Song '{input_song}' by '{input_artist}' not found."
+        }
+
     return {
         'prediction': prediction,
         'inputs': {
-            'input': input,
+            'input_song': input_song,
+            'input_artist': input_artist
+        }
+    }
+
+@app.get("/explain-similar-lyrics")
+def get_predict_similar_lyrics(input_song: str, input_artist: str):
+    """
+    Endpoint qui explique en quoi les lyrics des chansons les plus proches sont similaires".
+    """
+    try:
+        explanation = model_gemini_lyrics_explained(input_song, input_artist)
+    except ValueError:
+        return {
+            'error': f"Song '{input_song}' by '{input_artist}' not found."
+        }
+
+    return {
+        'prediction': explanation,
+        'inputs': {
+            'input_song': input_song,
+            'input_artist': input_artist
         }
     }
