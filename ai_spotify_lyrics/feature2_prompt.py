@@ -3,7 +3,7 @@ from langgraph.prebuilt import create_react_agent
 from langchain.schema import HumanMessage
 
 # Prompt Gemini model
-def gemini_prompt(user_input):
+def prompt_gemini(user_input):
 
     ### Instantiate Gemini model ###
     model = init_chat_model("gemini-2.0-flash", model_provider="google_genai")
