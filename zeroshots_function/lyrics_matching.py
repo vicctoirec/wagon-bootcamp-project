@@ -14,10 +14,12 @@ from tqdm.auto import tqdm
 from torch.nn.functional import normalize
 from sentence_transformers import SentenceTransformer, util
 from zeroshots_function.zeroshot_pipeline import preprocess_lyrics, get_zeroshot_score
+from ai_spotify_lyrics.params import *
+from ai_spotify_lyrics.feature2_prompt import prompt_gemini
 
 # ----------------------- PARAMÈTRES --------------------------------
-EMBD_CSV  = Path("../raw_data/miniLM_17Klyrics.csv")
-RAW_CSV = Path('../raw_data/data_17k_lyrics.csv')
+EMBD_CSV  = Path(DATA_CSV_17k_EMBED)
+RAW_CSV = Path(DATA_CSV_17k)
 MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"  # SBERT model
 BATCH_SIZE = 32  # Batch size for encoding
 TOP_K = 50  # Number of top matches to return
@@ -124,7 +126,7 @@ def get_top_k(user_input: str, k=TOP_K):
 
 
 # --------------- FONCTION PRINCIPALE -------------------
-def refine_top_k(user_input: str,
+def refine_top_k(enriched_input: str,
                  threshold : float =0.2,
                  k_recall : int =50,
                  k_final : int =10,
@@ -143,12 +145,8 @@ def refine_top_k(user_input: str,
 
     t0 = time.perf_counter()
 
-    # 0 - Affichage étape ------------------------------------------------------
-    if verbose:
-        print("📥 Chargement des méta-données…")
-
     # 1 ─ SBERT recall ---------------------------------------------------------
-    data = get_top_k(user_input, k=k_recall)
+    data = get_top_k(enriched_input, k=k_recall)
     if data.empty:
         return data
 
@@ -162,7 +160,7 @@ def refine_top_k(user_input: str,
     tqdm_bar = tqdm(total=len(data), desc="Chargement de la playlist...", unit="song")
     zs_scores = []
     for txt in data["lyrics_clean"]:
-        zs = get_zeroshot_score(txt, user_input)
+        zs = get_zeroshot_score(txt, enriched_input)
         zs_scores.append(zs)
         tqdm_bar.update(1)
     tqdm_bar.close()

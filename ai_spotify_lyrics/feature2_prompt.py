@@ -20,4 +20,4 @@ def prompt_gemini(user_input):
     # Get response
     response = agent.invoke({"messages": [HumanMessage(content=query)]})
 
-    return print(response["messages"][-1].content)
+    return str(response["messages"][-1].content)
