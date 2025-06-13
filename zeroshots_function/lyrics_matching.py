@@ -14,10 +14,11 @@ from tqdm.auto import tqdm
 from torch.nn.functional import normalize
 from sentence_transformers import SentenceTransformer, util
 from zeroshots_function.zeroshot_pipeline import preprocess_lyrics, get_zeroshot_score
+from ai_spotify_lyrics.params import *
 
 # ----------------------- PARAMÈTRES --------------------------------
-EMBD_CSV  = Path("../raw_data/miniLM_17Klyrics.csv")
-RAW_CSV = Path('../raw_data/data_17k_lyrics.csv')
+EMBD_CSV  = Path(DATA_CSV_17k_EMBED)
+RAW_CSV = Path(DATA_CSV_17k)
 MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"  # SBERT model
 BATCH_SIZE = 32  # Batch size for encoding
 TOP_K = 50  # Number of top matches to return
