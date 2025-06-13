@@ -28,11 +28,15 @@ langsmith==0.3.42
 #google-genai
 google-genai==1.14.0
 
+<<<<<<< victoire-feature2-gemini
+=======
 
+>>>>>>> main
 # Install the correct TensorFlow version
 # Uncomment if you use TensorFlow
-# tensorflow==2.16.2    # For both Intel and Apple silicon
-# keras==3.8.0
+tensorflow==2.16.2    # For both Intel and Apple silicon
+tf-keras
+sentencepiece
 
 # Google Cloud
 # Uncomment if you use Google Cloud Storage
