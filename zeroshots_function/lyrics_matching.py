@@ -10,33 +10,21 @@ from pathlib import Path
 import pandas as pd, time
 import numpy as np
 import torch
-<<<<<<< victoire-feature2-gemini
 from tqdm.auto import tqdm
 from torch.nn.functional import normalize
 from sentence_transformers import SentenceTransformer, util
 from zeroshots_function.zeroshot_pipeline import preprocess_lyrics, get_zeroshot_score
 
 # ----------------------- PARAMÈTRES --------------------------------
-EMBD_CSV  = Path("../raw_data/embedded_NEW_17klyrics.csv")
+EMBD_CSV  = Path("../raw_data/miniLM_17Klyrics.csv")
 RAW_CSV = Path('../raw_data/data_17k_lyrics.csv')
-MODEL_NAME = "paraphrase-multilingual-mpnet-base-v2"  # SBERT model
-=======
-# import argparse
-from sentence_transformers import SentenceTransformer, util
-from zeroshots_function.zeroshot_pipeline import preprocess_lyrics
-from ai_spotify_lyrics.params import *
-
-# ----------------------- PARAMÈTRES --------------------------------
-EMBD_CSV = Path(DATA_CSV_17k_EMBED)
-RAW_CSV = Path(DATA_CSV_17k) # mêmes index !
-MODEL_NAME = "nomic-ai/nomic-embed-text-v2-moe"  # SBERT model
->>>>>>> main
+MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"  # SBERT model
 BATCH_SIZE = 32  # Batch size for encoding
 TOP_K = 50  # Number of top matches to return
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+model = SentenceTransformer(MODEL_NAME, device=DEVICE)
 # -------------------------------------------------------------------
 
-model = SentenceTransformer(MODEL_NAME, device=DEVICE, trust_remote_code=True)
 
 def build_embeddings(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -49,7 +37,7 @@ def build_embeddings(df: pd.DataFrame) -> pd.DataFrame:
         pd.DataFrame: New DataFrame with embeddings.
     """
     # Initialize the SBERT model
-    model_sbert = SentenceTransformer(MODEL_NAME, device=DEVICE)
+    model_sbert = model
 
     # Encode the lyrics
     print("🔹 Encoding lyrics…")
@@ -118,13 +106,7 @@ def get_top_k(user_input: str, k=TOP_K):
         return pd.DataFrame(columns=["artist", "track_title_clean", "score"])
 
     # 4. Modèle SBERT identique pour l’input
-<<<<<<< victoire-feature2-gemini
-    model = SentenceTransformer(MODEL_NAME, device=DEVICE)
     user_vec = model.encode(user_input,device=DEVICE, convert_to_tensor=True, normalize_embeddings=True)
-=======
-    # model = SentenceTransformer(MODEL_NAME, device=DEVICE, trust_remote_code=True)
-    user_vec = model.encode(user_input,device=DEVICE)
->>>>>>> main
 
     # 5. Cosine similarity
     scores = util.cos_sim(user_vec, emb_t)[0]
@@ -142,10 +124,9 @@ def get_top_k(user_input: str, k=TOP_K):
 
 
 # --------------- FONCTION PRINCIPALE -------------------
-
 def refine_top_k(user_input: str,
-                 threshold : float =0.8,
-                 k_recall : int =40,
+                 threshold : float =0.2,
+                 k_recall : int =50,
                  k_final : int =10,
                  verbose : bool = True) -> pd.DataFrame:
     """
