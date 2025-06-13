@@ -29,3 +29,16 @@ jupyterlab_server==2.16.1
 notebook==6.4.12
 notebook_shim==0.2.0
 traitlets==5.5.0
+
+# langchain
+langchain==0.3.25
+langchain-chroma==0.2.3
+langchain-community==0.3.23
+langchain-core==0.3.59
+langchain-google-genai==2.1.4
+langchain-text-splitters==0.3.8
+langgraph==0.4.3
+langsmith==0.3.42
+
+# Google Gemini
+google-genai==1.14.0

@@ -22,6 +22,7 @@ MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"  # SBERT model
 BATCH_SIZE = 32  # Batch size for encoding
 TOP_K = 50  # Number of top matches to return
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+model = SentenceTransformer(MODEL_NAME, device=DEVICE)
 # -------------------------------------------------------------------
 
 
@@ -36,11 +37,11 @@ def build_embeddings(df: pd.DataFrame) -> pd.DataFrame:
         pd.DataFrame: New DataFrame with embeddings.
     """
     # Initialize the SBERT model
-    model = SentenceTransformer(MODEL_NAME, device=DEVICE)
+    model_sbert = model
 
     # Encode the lyrics
     print("🔹 Encoding lyrics…")
-    embs = model.encode(
+    embs = model_sbert.encode(
         df["lyrics_clean"].tolist(),
         batch_size=BATCH_SIZE,
         show_progress_bar=True)
@@ -105,7 +106,6 @@ def get_top_k(user_input: str, k=TOP_K):
         return pd.DataFrame(columns=["artist", "track_title_clean", "score"])
 
     # 4. Modèle SBERT identique pour l’input
-    model = SentenceTransformer(MODEL_NAME, device=DEVICE)
     user_vec = model.encode(user_input,device=DEVICE, convert_to_tensor=True, normalize_embeddings=True)
 
     # 5. Cosine similarity
@@ -124,7 +124,6 @@ def get_top_k(user_input: str, k=TOP_K):
 
 
 # --------------- FONCTION PRINCIPALE -------------------
-
 def refine_top_k(user_input: str,
                  threshold : float =0.2,
                  k_recall : int =50,

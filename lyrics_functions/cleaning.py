@@ -7,6 +7,7 @@ def clean_text(text):
     if not isinstance(text, str):
         return None
     text = text.replace('\r', ' ')
+    text = text.replace("\'", "'")
     text = re.sub(r'\s+', ' ', text)
     text = re.sub(r'\s+([,.!:;?])', r'\1', text)
     return text.strip()
