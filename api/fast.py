@@ -1,20 +1,21 @@
-# TODO: Import your package, replace this by explicit imports of what you need
-# from ai_spotify_lyrics.main import predict
-
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
-
-from ai_spotify_lyrics.model import initialize_dummy_model
-from ai_spotify_lyrics.model_gemini import get_artists, get_songs, model_gemini
-
-from ai_spotify_lyrics.lyrics_matching import get_top_k
-from ai_spotify_lyrics.model_feature_3 import get_top_similar_songs, model_gemini_lyrics_explained
-from ai_spotify_lyrics.feature2_prompt import prompt_gemini
-
-from zeroshots_function.lyrics_matching import refine_top_k
+from ai_spotify_lyrics.dummy_model import initialize_dummy_model
+from ai_spotify_lyrics.themes_agent import ThemesAgent
+from ai_spotify_lyrics.lyrics_matching import LyricsMatching
+from ai_spotify_lyrics.similar_songs import SimilarSongs
+from ai_spotify_lyrics.enrich_agent import EnrichAgent
+from ai_spotify_lyrics.zeroshot_pipeline import ZeroShotLyrics
+from ai_spotify_lyrics.params import *
 
 app = FastAPI()
-app.state.model = initialize_dummy_model()
+
+app.state.dummy_model = initialize_dummy_model()
+app.state.lyricsmatching = LyricsMatching(LYRICS_MATCHING_MODEL_PATH, LYRICS_MATCHING_MODEL_NAME, DATA_CSV_17k_EMBED, DATA_CSV_17k)
+app.state.zeroshot = ZeroShotLyrics(ZEROSHOT_MODEL_PATH, ZEROSHOT_MODEL_NAME)
+app.state.similar_songs = SimilarSongs(DATA_9K, SIMILAR_SONGS_PIPELINE, SIMILAR_SONGS_MODEL)
+app.state.enrich_agent = EnrichAgent()
+app.state.themes_agent = ThemesAgent(DATA_CSV_17k)
 
 app.add_middleware(
     CORSMiddleware,
@@ -35,7 +36,7 @@ def root():
 @app.get("/artists")
 def artists():
     """ Get a list of available artists """
-    results = get_artists()
+    results = app.state.themes_agent.get_artists()
     return {
         'results': results
     }
@@ -43,7 +44,7 @@ def artists():
 @app.get("/songs")
 def songs():
     """ Get a list of available songs """
-    results = get_songs()
+    results = app.state.themes_agent.get_songs()
     return {
         'results': results
     }
@@ -53,7 +54,7 @@ def songs():
 def get_predict(input: str):
     # input is a text prompt
     # For a dummy version, returns random songs
-    prediction = app.state.model.predict(input)
+    prediction = app.state.dummy_model.predict(input)
     return {
         'prediction': prediction,
         'inputs': {
@@ -65,10 +66,8 @@ def get_predict(input: str):
 @app.get("/predict-artist-themes")
 def get_predict_themes(input: str):
     # input is an artist name
-    # For a dummy version, returns fixed themes
     # For gemini model returns str
-    prediction = model_gemini(input)
-    # prediction = ['journey', 'nature', 'universe', 'stars', 'god']
+    prediction = app.state.themes_agent.get_themes(input)
     return {
         'prediction': prediction,
         'inputs': {
@@ -87,7 +86,7 @@ def enrich_prompt(user_input: str):
     mais avec ?rerun=True pour regénérer une variante
     """
 
-    enriched = prompt_gemini(user_input)
+    enriched = app.state.enrich_agent.get_enriched_mood(user_input)
 
     return {
         "enriched_input": enriched,
@@ -102,8 +101,9 @@ def get_predict_mood_songs(enriched_input: str, k_recall: int = 40, k_final : in
     SBERT recall + raffinage Zero-Shot.
     """
 
-    df = refine_top_k(
-        enriched_input,
+    df = app.state.lyricsmatching.refine_top_k(
+        enriched_input=enriched_input,
+        zeroshot_model=app.state.zeroshot,
         k_recall=k_recall,
         k_final=k_final,
         verbose=False
@@ -111,7 +111,7 @@ def get_predict_mood_songs(enriched_input: str, k_recall: int = 40, k_final : in
 
     return {
         "used_prompt": enriched_input,
-        "playlist": df.to_dict(orient="records")
+        "prediction": df.to_dict(orient="records")
     }
 
 # ---------- FEATURE 3 endpoint 1 : similar songs ------------------------------
@@ -121,7 +121,7 @@ def get_predict_similar_songs(input_song: str, input_artist: str):
     Endpoint qui retourne les chansons similaires au format "title by artist".
     """
     try:
-        prediction = get_top_similar_songs(input_song, input_artist)
+        prediction = app.state.similar_songs.get_top_similar_songs(input_song, input_artist)
     except ValueError:
         return {
             'error': f"Song '{input_song}' by '{input_artist}' not found."
@@ -142,7 +142,7 @@ def get_predict_similar_lyrics(input_song: str, input_artist: str):
     Endpoint qui explique en quoi les lyrics des chansons les plus proches sont similaires".
     """
     try:
-        explanation = model_gemini_lyrics_explained(input_song, input_artist)
+        explanation = app.state.similar_songs.get_lyrics_explained(input_song, input_artist)
     except ValueError:
         return {
             'error': f"Song '{input_song}' by '{input_artist}' not found."
@@ -154,4 +154,22 @@ def get_predict_similar_lyrics(input_song: str, input_artist: str):
             'input_song': input_song,
             'input_artist': input_artist
         }
+    }
+
+
+
+@app.get("/similar-songs/artists")
+def similar_songs_artists():
+    """ Get a list of available artists """
+    results = app.state.similar_songs.get_artists()
+    return {
+        'results': results
+    }
+
+@app.get("/similar-songs/songs-by-artist")
+def similar_songs_by_artist(input: str):
+    """ Get a list of available songs by artist input """
+    results = app.state.similar_songs.get_songs_by_artist(input)
+    return {
+        'results': results
     }
