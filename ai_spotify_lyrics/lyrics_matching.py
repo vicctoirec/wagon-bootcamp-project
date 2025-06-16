@@ -14,7 +14,7 @@ import torch
 from tqdm.auto import tqdm
 from torch.nn.functional import normalize
 from sentence_transformers import SentenceTransformer, util
-from zeroshots_function.zeroshot_pipeline import preprocess_lyrics, get_zeroshot_score
+from ai_spotify_lyrics.zeroshot_pipeline import preprocess_lyrics, get_zeroshot_score
 from ai_spotify_lyrics.params import *
 from ai_spotify_lyrics.feature2_prompt import prompt_gemini
 
