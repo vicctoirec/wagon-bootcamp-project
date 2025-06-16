@@ -108,7 +108,7 @@ class SimilarSongs:
         top_songs = label_songs.sort_values(by='similarity', ascending=False).head(3)
 
         return [
-            f"{row['title_cleaned']} by {row['artist']}"
+            (row['title_cleaned'],row['artist'])
             for _, row in top_songs.iterrows()
         ]
 
@@ -118,18 +118,19 @@ class SimilarSongs:
         Use the artist name and song title in the query as artist_name and song_title """
 
         similar = self.get_top_similar_songs(song_title, artist_name)
-        all_songs = [f"{song_title} by {artist_name}"] + similar
+        all_songs = [(song_title,artist_name)] + similar
 
         # Récupérer les paroles
         results = []
-        for full_title in all_songs:
+        for title, artist in all_songs:
             try:
-                title, artist = full_title.split(" by ")
-                row = self.df[(self.df['title_cleaned'] == title) & (self.df['artist'] == artist)].iloc[0]
+                row = self.df[
+                    (self.df['title_cleaned'] == title) & (self.df['artist'] == artist)
+                ].iloc[0]
                 lyrics = row['text']
                 results.append(f"Artist: {artist}\nTitle: {title}\nLyrics: {lyrics}\n")
             except IndexError:
-                results.append(f"Paroles non trouvées pour: {full_title}")
+                results.append(f"Paroles non trouvées pour: {title} - {artist}\n")
 
         return "\n".join(results)
 
