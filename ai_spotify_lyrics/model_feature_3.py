@@ -69,7 +69,7 @@ def get_top_similar_songs(song, artist):
 
 # Get lyrics from dataframe
 def get_lyrics_top_songs(song_title : str, artist_name : str) -> str:
-    """ Input a song and artist and get the top 5 songs similar in beat and lyrics.
+    """ Input a song and artist and get the top songs similar in beat and lyrics.
     Use the artist name and song title in the query as artist_name and song_title """
 
     similar = get_top_similar_songs(song_title, artist_name)
@@ -78,13 +78,10 @@ def get_lyrics_top_songs(song_title : str, artist_name : str) -> str:
     # Récupérer les paroles
     results = []
     for full_title in all_songs:
-        try:
-            title, artist = full_title.split(" by ")
-            row = df[(df['title_cleaned'] == title) & (df['artist'] == artist)].iloc[0]
-            lyrics = row['text']
-            results.append(f"Artist: {artist}\nTitle: {title}\nLyrics: {lyrics}\n")
-        except IndexError:
-            results.append(f"Paroles non trouvées pour: {full_title}")
+        title, artist = full_title.split(" by ")
+        row = df[(df['title_cleaned'] == title) & (df['artist'] == artist)].iloc[0]
+        lyrics = row['text']
+        results.append(f"Artist: {artist}\nTitle: {title}\nLyrics: {lyrics}\n")
 
     return "\n".join(results)
 
