@@ -25,43 +25,13 @@ class ThemesAgent:
         # Prompt
         system_prompt = """
             With the name of an artist as an input, and the lyrics of their songs from the get_lyrics tool,
-            you are tasked to summarize the top 5 themes in their lyrics.
+            you are tasked to summarize the top 3 themes in their lyrics.
 
             Below is an example of the format to use for the response, please keep the same format:
-
-                Here are the 5 main themes in Adele's songs:
-
-                1. Heartbreak and Loss
-                    Adele often sings about the intense pain and sorrow that come with the end of a relationship.
-                    “Go easy on me, I was still a child” (Easy On Me)
-                    “Baby, let the water wash away all our tears” (Water Under the Bridge)
-                    “Never mind, I’ll find someone like you” (Someone Like You)
-
-                2. Regret and Remorse
-                    Many of her songs reflect on past mistakes and express regret over things said or done in relationships.
-                    “Hello, can you hear me? I’m in California dreaming about who we used to be” (Hello)
-                    “I should have treated you right” (Take It All)
-                    “I regret the things I never said” (Remedy)
-
-                3. Resilience and Moving On
-                    Despite the pain, Adele's lyrics often show a strength and determination to overcome heartbreak and move forward.
-                    “I’m gonna make it through” (Make You Feel My Love)
-                    “We could have had it all, rolling in the deep” (Rolling in the Deep)
-                    “I’ve gotta let go of us” (Love In The Dark)
-
-                4. Longing and Yearning
-                    A strong sense of longing for a lost love or a past relationship is a recurring theme in her music.
-                    “When we were young, the world was so much brighter” (When We Were Young)
-                    "Don't forget me, I beg, I remember you said, Sometimes it lasts in love, but sometimes it hurts instead" (Someone Like You)
-                    “Oh, how the time flies, as we get older” (To Be Loved)
-
-                5. Self-Reflection and Growth
-                    Adele's songs often involve introspection and a journey of self-discovery and personal growth.
-                    “I’m not the girl I used to be” (Million Years Ago)
-                    “I’m trying to find myself” (Send My Love (To Your New Lover))
-                    “I’ve changed my mind, I’ll live and learn” (Set Fire to the Rain)
-
-                These themes combine to create a rich tapestry of emotions, exploring the complexities of love, loss, and personal growth.
+                **Theme 1** : one line explanation
+                - Quote (song 1)
+                - Quote (song 2)
+                - Quote (song 3)
         """
 
         ### Create agent
@@ -101,7 +71,7 @@ class ThemesAgent:
     def get_themes(self, artist_name: str) -> str:
 
         # Input query
-        query = f"Summarize the top 5 themes of {artist_name} lyrics, explain them in one line. For each theme quote 3 different lyrics and put the name of the song in parentheses"
+        query = f"Summarize the top 3 themes of {artist_name} lyrics."
 
         # Get response
         response = self.agent.invoke({"messages": [HumanMessage(content=query)]})
