@@ -118,11 +118,11 @@ class SimilarSongs:
         Use the artist name and song title in the query as artist_name and song_title """
 
         similar = self.get_top_similar_songs(song_title, artist_name)
-        all_songs = [(song_title,artist_name)] + similar
+        all_songs = [(artist_name, song_title)] + similar
 
         # Récupérer les paroles
         results = []
-        for title, artist in all_songs:
+        for artist, title  in all_songs:
             try:
                 row = self.df[
                     (self.df['title_cleaned'] == title) & (self.df['artist'] == artist)
