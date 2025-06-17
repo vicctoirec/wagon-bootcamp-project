@@ -108,7 +108,7 @@ class SimilarSongs:
         top_songs = label_songs.sort_values(by='similarity', ascending=False).head(3)
 
         return [
-            (row['title_cleaned'],row['artist'])
+            (row['artist'],row['title_cleaned'])
             for _, row in top_songs.iterrows()
         ]
 
