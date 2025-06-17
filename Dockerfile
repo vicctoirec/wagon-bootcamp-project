@@ -48,4 +48,4 @@ COPY raw_data raw_data
 COPY api api
 COPY ai_spotify_lyrics ai_spotify_lyrics
 
-CMD uvicorn api.fast:app --host 0.0.0.0 --port $PORT
+CMD uvicorn api.fast:app --host 0.0.0.0 --port $DOCKER_LOCAL_PORT

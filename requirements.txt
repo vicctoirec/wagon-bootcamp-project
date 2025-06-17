@@ -16,8 +16,10 @@ langchain
 # langchain-core==0.3.59
 # langchain-google-genai==2.1.4
 # langchain-text-splitters==0.3.8
-# langgraph==0.4.3
-# langsmith==0.3.42
+langgraph==0.4.8
+langgraph-checkpoint==2.0.26
+langgraph-prebuilt==0.2.2
+langgraph-sdk==0.1.70
 
 # Google Gemini
 # google-genai==1.14.0
