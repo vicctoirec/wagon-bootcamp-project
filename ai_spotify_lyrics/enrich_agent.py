@@ -15,7 +15,17 @@ class EnrichAgent:
     def get_enriched_mood(self, user_input: str):
 
         # Input query
-        query = f"Give me a mood in 2 sentences based on the following: {user_input}"
+        query = f"Give me a mood in 2 sentences based on the following: {user_input}. Keep most of the important words from the text. Output text only using the langugage of the text."
+
+        # Get response
+        response = self.agent.invoke({"messages": [HumanMessage(content=query)]})
+
+        return str(response["messages"][-1].content)
+
+
+    def get_topics(self, user_input: str):
+
+        query = f"Give between 1 and 10 words describing the following text: {user_input}. Output only the words separated by whitespaces. Output text only using the langugage of the text"
 
         # Get response
         response = self.agent.invoke({"messages": [HumanMessage(content=query)]})
