@@ -23,5 +23,14 @@ LYRICS_MATCHING_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 LYRICS_MATCHING_MODEL_PATH = os.path.join(LOCAL_REGISTRY_PATH, 'all-MiniLM-L6-v2')
 
 # ZeroShot
-ZEROSHOT_MODEL_NAME = "facebook/bart-large-mnli"
-ZEROSHOT_MODEL_PATH = os.path.join(LOCAL_REGISTRY_PATH, 'bart-large-mnli')
+# ZEROSHOT_MODEL_NAME = "facebook/bart-large-mnli"
+# ZEROSHOT_MODEL_PATH = os.path.join(LOCAL_REGISTRY_PATH, 'bart-large-mnli')
+
+# ZEROSHOT_MODEL_NAME = "valhalla/distilbart-mnli-12-3"
+# ZEROSHOT_MODEL_PATH = os.path.join(LOCAL_REGISTRY_PATH, 'distilbart-mnli-12-3')
+
+ZEROSHOT_MODEL_NAME = "typeform/distilbert-base-uncased-mnli"
+ZEROSHOT_MODEL_PATH = os.path.join(LOCAL_REGISTRY_PATH, 'distilbert-base-uncased-mnli')
+
+# ZEROSHOT_MODEL_NAME = "MoritzLaurer/mDeBERTa-v3-base-mnli-xnli"
+# ZEROSHOT_MODEL_PATH = os.path.join(LOCAL_REGISTRY_PATH, 'mDeBERTa-v3-base-mnli-xnli')
