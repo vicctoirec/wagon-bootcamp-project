@@ -8,6 +8,8 @@ from ai_spotify_lyrics.enrich_agent import EnrichAgent
 from ai_spotify_lyrics.zeroshot_pipeline import ZeroShotLyrics
 from ai_spotify_lyrics.params import *
 import time
+from string import punctuation
+
 
 app = FastAPI()
 
@@ -98,11 +100,15 @@ def enrich_prompt(user_input: str):
     """
 
     enriched = app.state.enrich_agent.get_enriched_mood(user_input)
+    topics = app.state.enrich_agent.get_topics(user_input).lower()
+    topics = ''.join([char for char in topics if char not in punctuation])
 
     return {
         "enriched_input": enriched,
+        "topics": topics,
         "original_input": user_input
     }
+
 
 # ---------- FEATURE 2 endpoint 2 : get playlist -------------------------------
 @app.get("/predict-mood-songs")
