@@ -3,6 +3,62 @@ from langchain.chat_models import init_chat_model
 from langchain_core.tools import tool
 from langgraph.prebuilt import create_react_agent
 from langchain.schema import HumanMessage
+from ai_spotify_lyrics.params import DATA_CSV_17k
+
+
+FALLBACK_ARTIST = "ABBA"
+FALLBACK_THEMES = """
+        Here are the 3 main themes in ABBA songs:
+
+        **Love and Relationships**
+        ABBA's songs frequently explore the complexities of love, ranging from passionate romance to painful breakups.
+        - "Honey, I was stronger then" (Waterloo)
+        - "You and I were meant to be for each other" (I Do, I Do, I Do, I Do, I Do)
+        - "Breaking up is never easy, I know" (The Winner Takes It All)
+
+        Nostalgia and Memories
+        Many ABBA songs reflect on past times, evoking a sense of longing and reminiscence.
+        - "Do you remember when we kissed by the old oak tree?" (When I Kissed the Teacher)
+        - "Those were the days, my friend, we thought they'd never end" (Fernando)
+        - "I was so young then, I never thought of needing anyone" (Mamma Mia)
+
+        Dancing and Celebration
+        ABBA is known for their upbeat, danceable tracks that celebrate life and encourage listeners to enjoy the moment.
+        - "You can dance, you can jive, having the time of your life" (Dancing Queen)
+        - "See that girl, watch that scene, dig in the dancing queen" (Dancing Queen)
+        - "Gimme, gimme, gimme a man after midnight" (Gimme! Gimme! Gimme! (A Man After Midnight))
+        """
+
+
+DATA = pd.read_csv(DATA_CSV_17k)
+
+@tool(parse_docstring=True)
+def get_lyrics(artist_name : str) -> str:
+    """ Get song titles and lyrics of a specific artist's name.
+
+    This function searches lyrics by an artist in a song's DataFrame.
+    It returns a string containings titles of songs and the lyrics if
+    any were found for the provide artist name, or 'No songs found for {artist_name}.".
+
+    Args:
+        artist_name: the artist to search for.
+
+    Returns:
+        A string where each song's title is prepended by 'Title: ' followed by the lyrics
+        prepended by 'Lyrics: '. If no songs match the artist's name the function returns
+        a string 'No songs found for {artist_name}.'
+    """
+
+    songs = DATA[DATA['artist'].isin([artist_name])]
+
+    if songs.empty:
+        f"No songs found for {artist_name}."
+
+    results = []
+    for _, row in songs.iterrows():
+        results.append(f"Title: {row['track_title_clean']}\nLyrics: {row['lyrics_clean']}\n")
+    return "\n".join(results)
+
 
 
 class ThemesAgent:
@@ -20,12 +76,13 @@ class ThemesAgent:
         model = init_chat_model(model, model_provider=model_provider)
         ### Instantiate variables ###
         # Tools
-        tools = [self.get_lyrics]
+        tools = [get_lyrics]
 
         # Prompt
         system_prompt = """
             With the name of an artist as an input, and the lyrics of their songs from the get_lyrics tool,
-            you are tasked to summarize the top 3 themes in their lyrics.
+            you are tasked to summarize the top 3 themes in their lyrics. If the get_lyrics tool does not
+            return lyrics for the artist return tool's output.
 
             Below is an example of the format to use for the response based on an example for one theme for Adele, please keep the same format:
 
@@ -64,15 +121,26 @@ class ThemesAgent:
 
 
     # Get lyrics from dataframe
-    @tool
     def get_lyrics(self, artist_name : str) -> str:
         """ Get song titles and lyrics of a specific artist's name.
-        Use the artist name in the query as artist_name """
+
+        This function searches lyrics by an artist in a song's DataFrame.
+        It returns a string containings titles of songs and the lyrics if
+        any were found for the provide artist name, or 'No songs found for this {artist_name}.".
+
+        Args:
+            artist_name: the artist to search for.
+
+        Returns:
+            A string where each song's title is prepended by 'Title: ' followed by the lyrics
+            prepended by 'Lyrics: '. If no songs match the artist's name the function returns
+            a string 'No songs found for {artist_name}.'
+        """
 
         songs = self.df[self.df['artist'].isin([artist_name])]
 
         if songs.empty:
-            f"No songs found for this {artist_name}."
+            f"No songs found for {artist_name}."
 
         results = []
         for _, row in songs.iterrows():
@@ -84,7 +152,7 @@ class ThemesAgent:
     def get_themes(self, artist_name: str) -> str:
 
         # Input query
-        query = f"Summarize the top 3 themes of {artist_name} lyrics, explain them in one line. For each theme quote 3 different lyrics and put the name of the song in parentheses"
+        query = f"Summarize the top 3 themes of '{artist_name}' lyrics, explain them in one line. For each theme quote 3 different lyrics and put the name of the song in parentheses"
 
         # Get response
         response = self.agent.invoke({"messages": [HumanMessage(content=query)]})

@@ -1,12 +1,13 @@
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from ai_spotify_lyrics.dummy_model import initialize_dummy_model
-from ai_spotify_lyrics.themes_agent import ThemesAgent
+from ai_spotify_lyrics.themes_agent import ThemesAgent, FALLBACK_ARTIST, FALLBACK_THEMES
 from ai_spotify_lyrics.lyrics_matching import LyricsMatching
 from ai_spotify_lyrics.similar_songs import SimilarSongs
 from ai_spotify_lyrics.enrich_agent import EnrichAgent
 from ai_spotify_lyrics.zeroshot_pipeline import ZeroShotLyrics
 from ai_spotify_lyrics.params import *
+import time
 
 app = FastAPI()
 
@@ -68,6 +69,16 @@ def get_predict_themes(input: str):
     # input is an artist name
     # For gemini model returns str
     prediction = app.state.themes_agent.get_themes(input)
+
+    retries = 0
+    max_retries = 2
+    while not prediction and retries < max_retries:
+        time.sleep(1)
+        prediction = app.state.themes_agent.get_themes(input)
+
+    if not prediction and input == FALLBACK_ARTIST:
+        prediction = FALLBACK_THEMES
+
     return {
         'prediction': prediction,
         'inputs': {
