@@ -8,26 +8,26 @@ from ai_spotify_lyrics.params import DATA_CSV_17k
 
 FALLBACK_ARTIST = "ABBA"
 FALLBACK_THEMES = """
-        Here are the 3 main themes in ABBA songs:
+    Here are the 3 main themes in ABBA songs:
 
-        **Love and Relationships**
-        ABBA's songs frequently explore the complexities of love, ranging from passionate romance to painful breakups.
-        - "Honey, I was stronger then" (Waterloo)
-        - "You and I were meant to be for each other" (I Do, I Do, I Do, I Do, I Do)
-        - "Breaking up is never easy, I know" (The Winner Takes It All)
+    **Love and Relationships**
+    ABBA's songs frequently explore the complexities of love, ranging from passionate romance to painful breakups.
+    - "Honey, I was stronger then" (Waterloo)
+    - "You and I were meant to be for each other" (I Do, I Do, I Do, I Do, I Do)
+    - "Breaking up is never easy, I know" (The Winner Takes It All)
 
-        Nostalgia and Memories
-        Many ABBA songs reflect on past times, evoking a sense of longing and reminiscence.
-        - "Do you remember when we kissed by the old oak tree?" (When I Kissed the Teacher)
-        - "Those were the days, my friend, we thought they'd never end" (Fernando)
-        - "I was so young then, I never thought of needing anyone" (Mamma Mia)
+    Nostalgia and Memories
+    Many ABBA songs reflect on past times, evoking a sense of longing and reminiscence.
+    - "Do you remember when we kissed by the old oak tree?" (When I Kissed the Teacher)
+    - "Those were the days, my friend, we thought they'd never end" (Fernando)
+    - "I was so young then, I never thought of needing anyone" (Mamma Mia)
 
-        Dancing and Celebration
-        ABBA is known for their upbeat, danceable tracks that celebrate life and encourage listeners to enjoy the moment.
-        - "You can dance, you can jive, having the time of your life" (Dancing Queen)
-        - "See that girl, watch that scene, dig in the dancing queen" (Dancing Queen)
-        - "Gimme, gimme, gimme a man after midnight" (Gimme! Gimme! Gimme! (A Man After Midnight))
-        """
+    Dancing and Celebration
+    ABBA is known for their upbeat, danceable tracks that celebrate life and encourage listeners to enjoy the moment.
+    - "You can dance, you can jive, having the time of your life" (Dancing Queen)
+    - "See that girl, watch that scene, dig in the dancing queen" (Dancing Queen)
+    - "Gimme, gimme, gimme a man after midnight" (Gimme! Gimme! Gimme! (A Man After Midnight))
+    """
 
 
 DATA = pd.read_csv(DATA_CSV_17k)
