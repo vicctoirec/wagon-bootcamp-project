@@ -112,7 +112,7 @@ def enrich_prompt(user_input: str):
 
 # ---------- FEATURE 2 endpoint 2 : get playlist -------------------------------
 @app.get("/predict-mood-songs")
-def get_predict_mood_songs(enriched_input: str, k_recall: int = 40, k_final : int = 10):
+def get_predict_mood_songs(enriched_input: str, k_recall: int = 30, k_final : int = 9):
     """
     Exporte un top-10 de titres basé sur `enriched_input`
     SBERT recall + raffinage Zero-Shot.
